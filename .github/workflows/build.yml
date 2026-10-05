@@ -27,6 +27,7 @@ jobs:
           repository: SagerNet/sing-box-for-apple
           ref: ${{ inputs.apple_ref }}
           path: sing-box-for-apple
+          submodules: recursive
 
       - uses: actions/setup-go@v5
         with:
