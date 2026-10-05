@@ -80,8 +80,18 @@ jobs:
             file -b "$f" | grep -q Mach-O && ldid -S "$f" || true
           done < <(find "$APP" -type f -perm +111)
           # entitlements for the tunnel extension and main app
-          ldid -S"$ENT/Extension.plist" "$APP/PlugIns/Extension.appex/Extension"
-          ldid -S"$ENT/App.plist" "$APP/sing-box"
+          ls "$ENT"; ls "$APP" "$APP/PlugIns" || true
+          # tunnel extension = the appex whose bundle id ends with .extension
+          for appex in "$APP"/PlugIns/*.appex; do
+            exe="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$appex/Info.plist")"
+            bid="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$appex/Info.plist")"
+            echo "appex $appex exe=$exe id=$bid"
+            case "$bid" in
+              *.extension) ldid -S"$ENT/Extension.plist" "$appex/$exe" ;;
+            esac
+          done
+          main="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist")"
+          ldid -S"$ENT/App.plist" "$APP/$main"
           rm -rf Payload && mkdir Payload && cp -R "$APP" Payload/
           zip -qry ../sing-box-trollstore.ipa Payload
 
