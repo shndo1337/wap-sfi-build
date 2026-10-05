@@ -5,10 +5,10 @@ on:
     inputs:
       singbox_ref:
         description: sing-box ref (tag/branch)
-        default: main
+        default: testing
       apple_ref:
         description: sing-box-for-apple ref (tag/branch)
-        default: main
+        default: dev
 
 jobs:
   build:
