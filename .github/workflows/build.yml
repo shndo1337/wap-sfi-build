@@ -64,6 +64,8 @@ jobs:
         working-directory: sing-box-for-apple
         run: |
           set -o pipefail
+          # some targets default to iOS 15 but the UI code needs iOS 16 APIs
+          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = 15.0/IPHONEOS_DEPLOYMENT_TARGET = 16.0/g' sing-box.xcodeproj/project.pbxproj
           xcodebuild -version
           if ! xcodebuild build -skipPackagePluginValidation \
             -scheme SFI -configuration Release \
