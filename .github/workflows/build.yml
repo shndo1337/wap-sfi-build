@@ -52,6 +52,14 @@ jobs:
             cp -R "$src" sing-box-for-apple/Libbox.xcframework
           fi
 
+      - name: Select newest Xcode (iOS 26 SDK needed for UIGlassEffect)
+        run: |
+          ls -d /Applications/Xcode*.app
+          x="$(ls -d /Applications/Xcode_2[6-9]*.app 2>/dev/null | sort -V | tail -1)"
+          test -n "$x" || { echo "no Xcode 26+ on this runner"; exit 1; }
+          sudo xcode-select -s "$x/Contents/Developer"
+          xcodebuild -version
+
       - name: Build unsigned app
         working-directory: sing-box-for-apple
         run: |
