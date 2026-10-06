@@ -89,6 +89,8 @@ jobs:
             /usr/libexec/PlistBuddy -c "Delete :com.apple.security.exception.mach-lookup.global-name" "$p" 2>/dev/null || true
           done
           rm -rf "$APP/_CodeSignature" "$APP/embedded.mobileprovision"
+          # widget needs iOS 18; not needed here and breaks install on iOS 16
+          rm -rf "$APP/PlugIns/WidgetExtension.appex"
           # ad-hoc sign every nested Mach-O first
           while IFS= read -r f; do
             file -b "$f" | grep -q Mach-O && ldid -S "$f" || true
