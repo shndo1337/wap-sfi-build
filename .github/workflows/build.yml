@@ -55,13 +55,19 @@ jobs:
       - name: Build unsigned app
         working-directory: sing-box-for-apple
         run: |
-          xcodebuild build -skipPackagePluginValidation \
+          set -o pipefail
+          xcodebuild -version
+          if ! xcodebuild build -skipPackagePluginValidation \
             -scheme SFI -configuration Release \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build/dd \
             BASE_PACKAGE_IDENTIFIER=io.nekohasekai.sfajb \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ENABLE_BITCODE=NO \
-            DISABLE_SWIFTLINT=1 | xcbeautify
+            DISABLE_SWIFTLINT=1 > build.log 2>&1; then
+            echo "=== xcodebuild failed; compiler errors ==="
+            grep -n -B2 -A6 -E "error:|fatal error" build.log | head -120
+            exit 1
+          fi
           ls build/dd/Build/Products/Release-iphoneos
 
       - name: Fake-sign with entitlements and pack IPA
